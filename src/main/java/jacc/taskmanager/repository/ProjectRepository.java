@@ -13,5 +13,4 @@ import java.util.UUID;
 public interface ProjectRepository extends JpaRepository<Project, UUID> {
     List<Project> findByOwner(User owner);
     Optional<Project> findByOwnerAndName(User owner, String name);
-    Optional<Project> findByIdempotencyKey(String idempotencyKey);
 }

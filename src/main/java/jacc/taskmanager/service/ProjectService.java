@@ -8,9 +8,11 @@ import jacc.taskmanager.model.Project;
 import jacc.taskmanager.model.User;
 import jacc.taskmanager.repository.ProjectRepository;
 import jacc.taskmanager.repository.UserRepository;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,11 +25,16 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
     private final UserService userService;
+    private final RedisTemplate<String, UUID> redisTemplate;
 
-    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository, UserService userService) {
+    private static final String IDEMPOTENCY_KEY_PREFIX = "project_creation_idempotency:";
+
+    public ProjectService(ProjectRepository projectRepository, UserRepository userRepository, 
+                          UserService userService, RedisTemplate<String, UUID> redisTemplate) {
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
         this.userService = userService;
+        this.redisTemplate = redisTemplate;
     }
 
     public List<ProjectResponse> findAll() {
@@ -57,11 +64,12 @@ public class ProjectService {
         User owner = userRepository.findByEmail(ownerEmail)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Handle Idempotency
+        // Handle Idempotency via Redis
         if (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isBlank()) {
-            Optional<Project> existingByIdempotency = projectRepository.findByIdempotencyKey(request.getIdempotencyKey());
-            if (existingByIdempotency.isPresent()) {
-                return convertToResponse(existingByIdempotency.get());
+            String redisKey = IDEMPOTENCY_KEY_PREFIX + request.getIdempotencyKey();
+            UUID existingId = redisTemplate.opsForValue().get(redisKey);
+            if (existingId != null) {
+                return findResponseById(existingId);
             }
         }
 
@@ -74,9 +82,16 @@ public class ProjectService {
         project.setName(request.getName());
         project.setDescription(request.getDescription());
         project.setOwner(owner);
-        project.setIdempotencyKey(request.getIdempotencyKey());
 
-        return convertToResponse(projectRepository.save(project));
+        Project savedProject = projectRepository.save(project);
+
+        // Store Idempotency result in Redis for 24 hours
+        if (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isBlank()) {
+            String redisKey = IDEMPOTENCY_KEY_PREFIX + request.getIdempotencyKey();
+            redisTemplate.opsForValue().set(redisKey, savedProject.getId(), Duration.ofHours(24));
+        }
+
+        return convertToResponse(savedProject);
     }
 
     public ProjectResponse update(UUID id, ProjectRequest request, String ownerEmail) {
@@ -86,7 +101,6 @@ public class ProjectService {
             throw new ResourceNotFoundException("Project not found or access denied");
         }
 
-        // Prevent duplicate names on update
         Optional<Project> existing = projectRepository.findByOwnerAndName(project.getOwner(), request.getName());
         if (existing.isPresent() && !existing.get().getId().equals(id)) {
             throw new ConflictException("You already have a project with the name: " + request.getName());

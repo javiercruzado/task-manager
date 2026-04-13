@@ -15,8 +15,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "projects", indexes = {
         @Index(name = "idx_projects_owner", columnList = "owner_id"),
-        @Index(name = "idx_projects_archived", columnList = "archived"),
-        @Index(name = "idx_projects_idempotency", columnList = "idempotency_key", unique = true)
+        @Index(name = "idx_projects_archived", columnList = "archived")
 }, uniqueConstraints = {
         @UniqueConstraint(name = "uk_project_owner_name", columnNames = {"owner_id", "name"})
 })
@@ -41,9 +40,6 @@ public class Project {
 
     @Column(nullable = false)
     private boolean archived = false;
-
-    @Column(name = "idempotency_key", unique = true)
-    private String idempotencyKey;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -94,14 +90,6 @@ public class Project {
 
     public void setArchived(boolean archived) {
         this.archived = archived;
-    }
-
-    public String getIdempotencyKey() {
-        return idempotencyKey;
-    }
-
-    public void setIdempotencyKey(String idempotencyKey) {
-        this.idempotencyKey = idempotencyKey;
     }
 
     public OffsetDateTime getCreatedAt() {
