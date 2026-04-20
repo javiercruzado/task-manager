@@ -155,7 +155,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"name\": \"My First Project\",\n    \"description\": \"This is a test project\"\n}",
+							"raw": "{\n    \"name\": \"My First Project\",\n    \"description\": \"This is a test project\",\n    \"idempotencyKey\": \"unique-project-key-1\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -228,7 +228,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"title\": \"Finish API setup\",\n    \"description\": \"Complete the JWT authentication and CRUD\",\n    \"status\": \"TODO\",\n    \"priority\": \"HIGH\"\n}",
+							"raw": "{\n    \"title\": \"Complete Task API\",\n    \"description\": \"Finish the task endpoints and testing\",\n    \"status\": \"IN_PROGRESS\",\n    \"priority\": \"HIGH\",\n    \"dueDate\": \"2024-12-31\",\n    \"idempotencyKey\": \"unique-task-key-1\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -273,6 +273,105 @@
 							"variable": [
 								{
 									"key": "projectId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Task By ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/:projectId/tasks/:taskId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"projects",
+								":projectId",
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": ""
+								},
+								{
+									"key": "taskId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Task",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Updated Task Title\",\n    \"description\": \"Updated description\",\n    \"status\": \"DONE\",\n    \"priority\": \"URGENT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/projects/:projectId/tasks/:taskId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"projects",
+								":projectId",
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": ""
+								},
+								{
+									"key": "taskId",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Task",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/projects/:projectId/tasks/:taskId",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"projects",
+								":projectId",
+								"tasks",
+								":taskId"
+							],
+							"variable": [
+								{
+									"key": "projectId",
+									"value": ""
+								},
+								{
+									"key": "taskId",
 									"value": ""
 								}
 							]
