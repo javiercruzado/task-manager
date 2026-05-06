@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
+import java.util.Set;
 import java.util.UUID;
 
 public class TaskRequest {
@@ -30,6 +31,8 @@ public class TaskRequest {
     private Integer position;
 
     private String idempotencyKey;
+
+    private Set<UUID> tagIds; // New field for tag IDs
 
     public TaskRequest() {
     }
@@ -96,5 +99,13 @@ public class TaskRequest {
 
     public void setIdempotencyKey(String idempotencyKey) {
         this.idempotencyKey = idempotencyKey;
+    }
+
+    public Set<UUID> getTagIds() {
+        return tagIds;
+    }
+
+    public void setTagIds(Set<UUID> tagIds) {
+        this.tagIds = tagIds;
     }
 }

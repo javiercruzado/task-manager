@@ -5,6 +5,7 @@ import jacc.taskmanager.model.enums.TaskStatus;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.util.Set;
 import java.util.UUID;
 
 public class TaskResponse {
@@ -21,6 +22,7 @@ public class TaskResponse {
     private OffsetDateTime updatedAt;
     private UserResponse assignee;
     private UserResponse createdBy;
+    private Set<TagResponse> tags; // New field for tag details
 
     public TaskResponse() {
     }
@@ -119,5 +121,13 @@ public class TaskResponse {
 
     public void setCreatedBy(UserResponse createdBy) {
         this.createdBy = createdBy;
+    }
+
+    public Set<TagResponse> getTags() {
+        return tags;
+    }
+
+    public void setTags(Set<TagResponse> tags) {
+        this.tags = tags;
     }
 }

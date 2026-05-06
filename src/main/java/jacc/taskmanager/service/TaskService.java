@@ -4,9 +4,11 @@ import jacc.taskmanager.dto.request.TaskRequest;
 import jacc.taskmanager.dto.response.TaskResponse;
 import jacc.taskmanager.exception.ResourceNotFoundException;
 import jacc.taskmanager.model.Project;
+import jacc.taskmanager.model.Tag;
 import jacc.taskmanager.model.Task;
 import jacc.taskmanager.model.User;
 import jacc.taskmanager.repository.ProjectRepository;
+import jacc.taskmanager.repository.TagRepository;
 import jacc.taskmanager.repository.TaskRepository;
 import jacc.taskmanager.repository.UserRepository;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -25,18 +29,23 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final ProjectRepository projectRepository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
     private final UserService userService;
+    private final TagService tagService;
     private final RedisTemplate<String, UUID> redisTemplate;
 
     private static final String IDEMPOTENCY_KEY_PREFIX = "task_creation_idempotency:";
 
     public TaskService(TaskRepository taskRepository, ProjectRepository projectRepository, 
-                       UserRepository userRepository, UserService userService, 
+                       UserRepository userRepository, TagRepository tagRepository,
+                       UserService userService, TagService tagService,
                        RedisTemplate<String, UUID> redisTemplate) {
         this.taskRepository = taskRepository;
         this.projectRepository = projectRepository;
         this.userRepository = userRepository;
+        this.tagRepository = tagRepository;
         this.userService = userService;
+        this.tagService = tagService;
         this.redisTemplate = redisTemplate;
     }
 
@@ -54,7 +63,6 @@ public class TaskService {
     public TaskResponse create(UUID projectId, TaskRequest request, String creatorEmail) {
         Project project = getProjectIfOwner(projectId, creatorEmail);
 
-        // Handle Idempotency via Redis
         if (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isBlank()) {
             String redisKey = IDEMPOTENCY_KEY_PREFIX + request.getIdempotencyKey();
             UUID existingId = redisTemplate.opsForValue().get(redisKey);
@@ -83,9 +91,14 @@ public class TaskService {
             task.setAssignee(assignee);
         }
 
+        if (request.getTagIds() != null && !request.getTagIds().isEmpty()) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(request.getTagIds()));
+            // Optional: verify all tags belong to the same project
+            task.setTags(tags);
+        }
+
         Task savedTask = taskRepository.save(task);
 
-        // Store Idempotency result in Redis for 24 hours
         if (request.getIdempotencyKey() != null && !request.getIdempotencyKey().isBlank()) {
             String redisKey = IDEMPOTENCY_KEY_PREFIX + request.getIdempotencyKey();
             redisTemplate.opsForValue().set(redisKey, savedTask.getId(), Duration.ofHours(24));
@@ -112,6 +125,11 @@ public class TaskService {
             task.setAssignee(assignee);
         } else {
             task.setAssignee(null);
+        }
+
+        if (request.getTagIds() != null) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(request.getTagIds()));
+            task.setTags(tags);
         }
 
         return convertToResponse(taskRepository.save(task));
@@ -157,6 +175,11 @@ public class TaskService {
             response.setAssignee(userService.convertToResponse(task.getAssignee()));
         }
         response.setCreatedBy(userService.convertToResponse(task.getCreatedBy()));
+        if (task.getTags() != null) {
+            response.setTags(task.getTags().stream()
+                    .map(tagService::convertToResponse)
+                    .collect(Collectors.toSet()));
+        }
         return response;
     }
 }
