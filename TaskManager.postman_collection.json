@@ -31,7 +31,8 @@
 								"auth",
 								"register"
 							]
-						}
+						},
+						"description": "Registers a new user. Check your application's console logs for the verification link and token after a successful registration."
 					},
 					"response": []
 				},
@@ -100,6 +101,31 @@
 								}
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify Account",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/verify?token={{verificationToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"verify"
+							],
+							"query": [
+								{
+									"key": "token",
+									"value": "{{verificationToken}}"
+								}
+							]
+						},
+						"description": "Verifies a user's account. After registering, copy the 'verificationToken' from the console logs and set it as a collection variable or directly in the URL query parameter."
 					},
 					"response": []
 				}
@@ -691,6 +717,11 @@
 		},
 		{
 			"key": "refreshToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "verificationToken",
 			"value": "",
 			"type": "string"
 		}

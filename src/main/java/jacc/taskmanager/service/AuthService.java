@@ -4,6 +4,7 @@ import jacc.taskmanager.dto.request.LoginRequest;
 import jacc.taskmanager.dto.request.RegisterRequest;
 import jacc.taskmanager.dto.response.AuthResponse;
 import jacc.taskmanager.exception.ConflictException;
+import jacc.taskmanager.exception.ResourceNotFoundException;
 import jacc.taskmanager.exception.UnauthorizedException;
 import jacc.taskmanager.model.User;
 import jacc.taskmanager.repository.UserRepository;
@@ -13,21 +14,28 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
+@Transactional
 public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final EmailService emailService; // Inject EmailService
 
     public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder,
-                       JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager) {
+                       JwtTokenProvider jwtTokenProvider, AuthenticationManager authenticationManager,
+                       EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtTokenProvider = jwtTokenProvider;
         this.authenticationManager = authenticationManager;
+        this.emailService = emailService;
     }
 
     public AuthResponse register(RegisterRequest registerRequest) {
@@ -40,12 +48,19 @@ public class AuthService {
         user.setFullName(registerRequest.getFullName());
         user.setPasswordHash(passwordEncoder.encode(registerRequest.getPassword()));
         user.setEnabled(false);
+        
+        // Generate and set verification token
+        String verificationToken = UUID.randomUUID().toString();
+        user.setVerificationToken(verificationToken);
+
         userRepository.save(user);
 
-        String accessToken = jwtTokenProvider.generateAccessToken(user.getEmail());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getEmail());
+        // Simulate sending verification email
+        String verificationLink = "http://localhost:8080/auth/verify?token=" + verificationToken; // Adjust URL as needed
+        emailService.sendVerificationEmail(user.getEmail(), user.getFullName(), verificationLink);
 
-        return new AuthResponse(accessToken, refreshToken);
+        // For registration, we don't return tokens until the account is verified
+        return new AuthResponse(null, null); // Or a specific DTO indicating success but no tokens yet
     }
 
     public AuthResponse login(LoginRequest loginRequest) {
@@ -78,5 +93,18 @@ public class AuthService {
             return new AuthResponse(newAccessToken, refreshToken);
         }
         throw new UnauthorizedException("Invalid refresh token");
+    }
+
+    public void verifyAccount(String token) {
+        User user = userRepository.findByVerificationToken(token)
+                .orElseThrow(() -> new ResourceNotFoundException("Invalid verification token"));
+
+        if (user.isEnabled()) {
+            throw new ConflictException("Account already verified");
+        }
+
+        user.setEnabled(true);
+        user.setVerificationToken(null); // Clear the token after successful verification
+        userRepository.save(user);
     }
 }

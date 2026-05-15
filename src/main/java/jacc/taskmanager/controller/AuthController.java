@@ -34,6 +34,12 @@ public class AuthController {
         return ResponseEntity.ok(authService.refresh(refreshToken));
     }
 
+    @GetMapping("/verify")
+    public ResponseEntity<String> verifyAccount(@RequestParam String token) {
+        authService.verifyAccount(token);
+        return ResponseEntity.ok("Account verified successfully!");
+    }
+
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         // Since we are using stateless JWT, client should delete the token.

@@ -39,6 +39,9 @@ public class User {
     @Column(nullable = false)
     private boolean enabled = false;
 
+    @Column(name = "verification_token")
+    private String verificationToken; // New field for email verification
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private OffsetDateTime createdAt;
@@ -96,6 +99,14 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public String getVerificationToken() {
+        return verificationToken;
+    }
+
+    public void setVerificationToken(String verificationToken) {
+        this.verificationToken = verificationToken;
     }
 
     public OffsetDateTime getCreatedAt() {
