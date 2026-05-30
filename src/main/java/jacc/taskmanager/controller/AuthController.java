@@ -41,9 +41,8 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout() {
-        // Since we are using stateless JWT, client should delete the token.
-        // For server-side logout, we would need a token blacklist (e.g., in Redis).
+    public ResponseEntity<Void> logout(@RequestParam String refreshToken) {
+        authService.logout(refreshToken);
         return ResponseEntity.noContent().build();
     }
 }

@@ -82,6 +82,23 @@
 				},
 				{
 					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"if (jsonData.accessToken) {",
+									"    pm.collectionVariables.set(\"accessToken\", jsonData.accessToken);",
+									"}",
+									"if (jsonData.refreshToken) {",
+									"    pm.collectionVariables.set(\"refreshToken\", jsonData.refreshToken);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -117,15 +134,34 @@
 							"path": [
 								"auth",
 								"verify"
-							],
-							"query": [
-								{
-									"key": "token",
-									"value": "{{verificationToken}}"
-								}
 							]
 						},
 						"description": "Verifies a user's account. After registering, copy the 'verificationToken' from the console logs and set it as a collection variable or directly in the URL query parameter."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/auth/logout?refreshToken={{refreshToken}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							],
+							"query": [
+								{
+									"key": "refreshToken",
+									"value": "{{refreshToken}}"
+								}
+							]
+						},
+						"description": "Logs out the user by revoking the refresh token. After this, the refresh token cannot be used to get new access tokens."
 					},
 					"response": []
 				}
@@ -566,12 +602,6 @@
 								"tasks",
 								":taskId",
 								"comments"
-							],
-							"variable": [
-								{
-									"key": "taskId",
-									"value": ""
-								}
 							]
 						}
 					},
@@ -591,12 +621,6 @@
 								"tasks",
 								":taskId",
 								"comments"
-							],
-							"variable": [
-								{
-									"key": "taskId",
-									"value": ""
-								}
 							]
 						}
 					},
@@ -626,16 +650,6 @@
 								":taskId",
 								"comments",
 								":commentId"
-							],
-							"variable": [
-								{
-									"key": "taskId",
-									"value": ""
-								},
-								{
-									"key": "commentId",
-									"value": ""
-								}
 							]
 						}
 					},
@@ -656,16 +670,6 @@
 								":taskId",
 								"comments",
 								":commentId"
-							],
-							"variable": [
-								{
-									"key": "taskId",
-									"value": ""
-								},
-								{
-									"key": "commentId",
-									"value": ""
-								}
 							]
 						}
 					},
