@@ -63,7 +63,7 @@ public class AuthService {
 
         userRepository.save(user);
 
-        String verificationLink = "http://localhost:8080/auth/verify?token=" + verificationToken;
+        String verificationLink = "http://localhost:8080/api/v1/auth/verify?token=" + verificationToken;
         emailService.sendVerificationEmail(user.getEmail(), user.getFullName(), verificationLink);
 
         return new AuthResponse(null, null);

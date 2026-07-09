@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/projects/{projectId}/tasks")
+@RequestMapping("/api/v1/projects/{projectId}/tasks")
 public class TaskController {
 
     private final TaskService taskService;

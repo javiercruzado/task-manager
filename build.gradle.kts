@@ -21,7 +21,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-data-redis")
-    implementation("org.flywaydb:flyway-core")
+    implementation("org.flywaydb:flyway-core:9.22.3")
     implementation("com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0")
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.12.5")

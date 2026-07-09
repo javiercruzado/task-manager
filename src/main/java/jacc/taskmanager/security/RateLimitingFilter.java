@@ -32,7 +32,7 @@ public class RateLimitingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        if (request.getRequestURI().startsWith("/auth/")) {
+        if (request.getRequestURI().startsWith("/api/v1/auth/")) {
             String clientIp = request.getRemoteAddr();
             Bucket bucket = buckets.computeIfAbsent(clientIp, k -> createNewBucket());
 

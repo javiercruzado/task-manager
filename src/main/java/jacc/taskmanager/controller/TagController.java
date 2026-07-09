@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/projects/{projectId}/tags")
+@RequestMapping("/api/v1/projects/{projectId}/tags")
 public class TagController {
 
     private final TagService tagService;

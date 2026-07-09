@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/tasks/{taskId}/comments")
+@RequestMapping("/api/v1/tasks/{taskId}/comments")
 public class CommentController {
 
     private final CommentService commentService;
