@@ -48,7 +48,25 @@ Once the database is running, you can start the Spring Boot application using Gr
 ./gradlew bootRun
 ```
 
-The API will be available at `http://localhost:8080`.
+The API and bundled frontend will be available at `http://localhost:8080`.
+
+### Running the Modern React Frontend (Vite)
+
+The modern React frontend is located in the `frontend` directory:
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The Vite dev server will start at `http://localhost:5173` and automatically proxy API calls to the backend on port 8080.
+
+To build and update the backend's static assets:
+
+```bash
+npm run build:static
+```
 
 ## Configuration
 
