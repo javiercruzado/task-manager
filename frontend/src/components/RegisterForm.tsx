@@ -6,9 +6,10 @@ import type { RegisterFormData } from '../types/auth';
 
 interface Props {
   onSuccess: (email: string) => void;
+  onSwitchToLogin: () => void;
 }
 
-export const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
+export const RegisterForm: React.FC<Props> = ({ onSuccess, onSwitchToLogin }) => {
   const [formData, setFormData] = useState<RegisterFormData>({
     fullName: '',
     email: '',
@@ -151,9 +152,13 @@ export const RegisterForm: React.FC<Props> = ({ onSuccess }) => {
         <h1 className="form-title">Create your account</h1>
         <p className="form-subtitle">
           Start managing projects and tasks with precision. Already registered?{' '}
-          <a href="#login" className="login-switch-link">
+          <button
+            type="button"
+            onClick={onSwitchToLogin}
+            className="auth-switch-btn"
+          >
             Sign in
-          </a>
+          </button>
         </p>
       </header>
 

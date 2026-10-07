@@ -4,9 +4,10 @@ import { CheckCircle2, Mail, ArrowRight, RefreshCw } from 'lucide-react';
 interface Props {
   email: string;
   onReset: () => void;
+  onGoToLogin: () => void;
 }
 
-export const RegistrationSuccess: React.FC<Props> = ({ email, onReset }) => {
+export const RegistrationSuccess: React.FC<Props> = ({ email, onReset, onGoToLogin }) => {
   return (
     <div className="success-screen-wrapper">
       <div className="success-icon-container">
@@ -33,15 +34,15 @@ export const RegistrationSuccess: React.FC<Props> = ({ email, onReset }) => {
       </div>
 
       <div className="success-button-group">
+        <button type="button" onClick={onGoToLogin} className="btn-primary-action">
+          <span>Go to Sign In</span>
+          <ArrowRight size={16} />
+        </button>
+
         <button type="button" onClick={onReset} className="btn-secondary-action">
           <RefreshCw size={16} />
           <span>Register Another User</span>
         </button>
-
-        <a href="#login" className="btn-primary-action">
-          <span>Go to Login</span>
-          <ArrowRight size={16} />
-        </a>
       </div>
     </div>
   );

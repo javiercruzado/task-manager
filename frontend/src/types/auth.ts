@@ -9,9 +9,24 @@ export interface RegisterFormData extends RegisterRequest {
   termsAccepted: boolean;
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 export interface AuthResponse {
   accessToken: string | null;
   refreshToken: string | null;
+}
+
+export interface UserResponse {
+  id: string;
+  email: string;
+  fullName: string;
+  avatarUrl?: string | null;
+  enabled: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ApiErrorResponse {
