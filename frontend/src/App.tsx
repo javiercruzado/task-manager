@@ -91,10 +91,10 @@ export const App: React.FC = () => {
       </div>
 
       {/* Main card container */}
-      <div className="app-card-wrapper">
-        <BrandPanel />
+      <div className={`app-card-wrapper ${view === 'dashboard' ? 'dashboard-mode' : ''}`}>
+        {view !== 'dashboard' && <BrandPanel />}
 
-        <main className="form-panel-content">
+        <main className={`form-panel-content ${view === 'dashboard' ? 'dashboard-panel-content' : ''}`}>
           {view === 'login' && (
             <LoginForm
               onSuccess={handleLoginSuccess}
