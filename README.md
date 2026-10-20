@@ -1,78 +1,89 @@
-# Task Manager API
+# Task Manager API & Web Application
 
-A backend service for managing tasks, built with Spring Boot and PostgreSQL.
+A full-stack project and task management system built with Spring Boot, PostgreSQL, Redis, and a modern React frontend.
 
 ## Technologies Used
 
-- **Java**: 21
-- **Spring Boot**: 3.5.10
-- **Database**: PostgreSQL 15
-- **Build Tool**: Gradle (Kotlin DSL)
+- **Backend**: Spring Boot 3.5.10, Java 21, Spring Security, JWT, Flyway
+- **Frontend**: React 19, TypeScript, Vite, Lucide Icons
+- **Database & Cache**: PostgreSQL 15, Redis 7
+- **Build Tools**: Gradle (Kotlin DSL), npm
 - **Containerization**: Docker & Docker Compose
 
-## Project Structure
+## Quick Start (Deploy Anywhere with Docker)
 
-- `src/main/java`: Source code for the application.
-- `src/main/resources`: Configuration files, including `application.properties`.
-- `docker-compose.yml`: Docker configuration for the PostgreSQL database.
-- `.env`: Environment variables for the database.
-- `start.sh` & `stop.sh`: Helper scripts for managing the database container.
-
-## Getting Started
-
-### Prerequisites
-
-- Java 21 JDK
-- Docker and Docker Compose
-
-### Running the Database
-
-To start the PostgreSQL database container:
+To run the entire system (Database, Redis, and Application with React UI) on any Linux, macOS, or Windows machine with Docker installed:
 
 ```bash
 chmod +x start.sh stop.sh
+
+# Start on default port (8080 or value configured in .env):
 ./start.sh
+
+# Start on a custom port (e.g. 9090 or 3000):
+./start.sh 9090
+# or
+./start.sh -p 9090
+
+# Prompt interactively for the port:
+./start.sh -i
 ```
 
-To stop the database:
+*(Or run `APP_PORT=9090 docker compose up -d --build`)*
 
+Once started, open **`http://localhost:<PORT>`** (default: `http://localhost:8080`) in your browser.
+
+To view application logs:
+```bash
+docker compose logs -f app
+```
+
+To stop all services:
 ```bash
 ./stop.sh
 ```
 
-### Running the Application
+---
 
-Once the database is running, you can start the Spring Boot application using Gradle:
+## Local Development (Without Docker for App)
 
+If you are developing features locally and prefer to run the database in Docker while running the code from your IDE:
+
+### 1. Start Database & Redis Only
+```bash
+docker compose up -d db redis
+```
+
+### 2. Run the Spring Boot Backend
+Ensure `JAVA_HOME` is set to Java 21+:
 ```bash
 ./gradlew bootRun
 ```
 
-The API and bundled frontend will be available at `http://localhost:8080`.
-
-### Running the Modern React Frontend (Vite)
-
-The modern React frontend is located in the `frontend` directory:
-
+### 3. Run the Frontend (Vite Dev Server)
+In a separate terminal:
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+The Vite dev server will start at `http://localhost:5173` and automatically proxy API calls to the backend on port `8080`.
 
-The Vite dev server will start at `http://localhost:5173` and automatically proxy API calls to the backend on port 8080.
-
-To build and update the backend's static assets:
-
+### 4. Build Static Frontend Bundle
+To update the embedded React assets served by Spring Boot:
 ```bash
+cd frontend
 npm run build:static
 ```
 
+---
+
 ## Configuration
 
-The application is configured via `src/main/resources/application.properties` and the `.env` file for Docker. Default database credentials are:
+The application is configured via `src/main/resources/application.properties` and `.env`:
 
-- **Database**: `taskmanager`
-- **User**: `postgres`
-- **Password**: `password`
-- **Port**: `5432`
+- **Database**: `taskmanager` (port `5432`)
+- **Default User**: `postgres`
+- **Default Password**: `d3v3l0p3r`
+- **Redis Port**: `6379`
+- **Web App / API Port**: `8080`
