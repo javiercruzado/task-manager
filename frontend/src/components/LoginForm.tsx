@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, AlertCircle, ArrowRight, Loader2, Sparkles } from 'lucide-react';
 import { loginUser, AuthApiError } from '../services/authService';
 import type { AuthResponse } from '../types/auth';
 
@@ -84,6 +84,14 @@ export const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister, init
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const fillDemoCredentials = () => {
+    setEmail('demo@example.com');
+    setPassword('Password123!');
+    setFieldErrors({});
+    setTouched({ email: true, password: true });
+    if (generalError) setGeneralError(null);
   };
 
   return (
@@ -212,6 +220,23 @@ export const LoginForm: React.FC<Props> = ({ onSuccess, onSwitchToRegister, init
             </>
           )}
         </button>
+
+        {/* Quick Demo Credentials Auto-Fill */}
+        <div className="demo-credentials-banner">
+          <div className="demo-credentials-info">
+            <Sparkles size={16} className="demo-icon" />
+            <span>Reviewing demo?</span>
+          </div>
+          <button
+            type="button"
+            onClick={fillDemoCredentials}
+            className="btn-demo-fill"
+            disabled={isSubmitting}
+            title="Auto-fill demo credentials: demo@example.com / Password123!"
+          >
+            Auto-fill Demo Account
+          </button>
+        </div>
       </form>
     </div>
   );

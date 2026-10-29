@@ -76,6 +76,18 @@ cd frontend
 npm run build:static
 ```
 
+## Demo Account Credentials
+
+When deployed or running locally, a demo account with pre-populated workspaces, tags, and tasks is automatically seeded:
+
+- **Email**: `demo@example.com`
+- **Password**: `Password123!`
+- *(Or click **"Auto-fill Demo Account"** directly on the sign-in screen)*
+
+Additional sample team members seeded for task assignment:
+- `sarah.chen@example.com` (`Password123!`)
+- `marcus.taylor@example.com` (`Password123!`)
+
 ---
 
 ## Configuration
