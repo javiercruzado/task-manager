@@ -45,6 +45,18 @@ To stop all services:
 
 ---
 
+## Cloud Deployment
+
+For deploying the application online:
+
+- **Decoupled Architecture (Recommended for Free Tier / Production)**:
+  Host the React frontend on **Vercel** / **Cloudflare Pages** (zero cold starts) with the backend API on **Railway** / **Render**, backed by **Neon / Supabase** (PostgreSQL) and **Upstash** (Redis).
+  👉 Follow the detailed [**Decoupled Cloud Deployment Guide**](docs/decoupled_cloud_deployment.md).
+- **Single-Server Docker Compose**:
+  Deploy directly to any Linux Cloud VPS (Hetzner, DigitalOcean, AWS Lightsail) using the standard `start.sh` and `docker-compose.yml`.
+
+---
+
 ## Local Development (Without Docker for App)
 
 If you are developing features locally and prefer to run the database in Docker while running the code from your IDE:

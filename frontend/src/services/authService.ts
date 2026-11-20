@@ -13,10 +13,17 @@ export class AuthApiError extends Error {
 }
 
 export const getApiBaseUrl = (): string => {
+  // 1. Manual override from settings drawer in localStorage
   const customUrl = localStorage.getItem('taskmanager_api_url');
   if (customUrl) return customUrl.replace(/\/+$/, '');
   
-  // In development with Vite proxy or production same-origin
+  // 2. Build-time or deployment environment variable (Vercel, Cloudflare Pages, Netlify)
+  const envUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL;
+  if (envUrl && typeof envUrl === 'string' && envUrl.trim() !== '') {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+
+  // 3. In development with Vite proxy or production same-origin
   return '';
 };
 

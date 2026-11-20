@@ -3,8 +3,9 @@ import { Settings, Check, Globe } from 'lucide-react';
 import { getApiBaseUrl, setApiBaseUrl } from '../services/authService';
 
 export const ApiSettingsDrawer: React.FC = () => {
+  const envDefaultUrl = import.meta.env.VITE_API_BASE_URL || import.meta.env.VITE_API_URL || '';
   const [isOpen, setIsOpen] = useState(false);
-  const [url, setUrl] = useState(getApiBaseUrl() || 'http://localhost:8080');
+  const [url, setUrl] = useState(() => getApiBaseUrl() || envDefaultUrl || 'http://localhost:8080');
   const [saved, setSaved] = useState(false);
 
   const handleSave = (e: React.FormEvent) => {
@@ -19,10 +20,12 @@ export const ApiSettingsDrawer: React.FC = () => {
 
   const handleResetDefault = () => {
     setApiBaseUrl('');
-    setUrl('http://localhost:8080');
+    setUrl(envDefaultUrl || 'http://localhost:8080');
     setSaved(true);
     setTimeout(() => setSaved(false), 1200);
   };
+
+  const currentDisplayUrl = getApiBaseUrl() || envDefaultUrl || (import.meta.env.DEV ? 'http://localhost:8080 (proxy)' : 'Same-origin (/api)');
 
   return (
     <div className="api-settings-container">
@@ -30,7 +33,7 @@ export const ApiSettingsDrawer: React.FC = () => {
         <div className="api-status-indicator">
           <span className="api-indicator-dot"></span>
           <span className="api-summary-text">
-            API: <strong>{getApiBaseUrl() || 'http://localhost:8080 (proxy)'}</strong>
+            API: <strong>{currentDisplayUrl}</strong>
           </span>
         </div>
         <button
